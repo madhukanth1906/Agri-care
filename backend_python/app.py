@@ -18,11 +18,10 @@ try:
     import pyrebase
     from firebase_config import FIREBASE_CONFIG, SERVICE_ACCOUNT_KEY, COLLECTIONS, STORAGE_PATHS
     FIREBASE_AVAILABLE = True
-    print("Firebase dependencies loaded successfully")
+    print("Firebase dependencies loaded")
 except ImportError as e:
-    print(f"Firebase not available: {e}")
+    print(f"Firebase support is unavailable: {e}")
     FIREBASE_AVAILABLE = False
-    # Mock Firebase classes
     class firestore:
         @staticmethod
         def client():
@@ -35,11 +34,10 @@ try:
     from PIL import Image
     import io
     PYTORCH_AVAILABLE = True
-    print("PyTorch dependencies loaded successfully")
+    print("PyTorch dependencies loaded")
 except ImportError as e:
-    print(f"PyTorch not available: {e}")
+    print(f"PyTorch support is unavailable: {e}")
     PYTORCH_AVAILABLE = False
-    # Mock classes for when PyTorch is not available
     class torch:
         @staticmethod
         def device(device_type):
@@ -71,7 +69,7 @@ try:
     import soundfile as sf
 except ImportError:
     sf = None
-    print("⚠️ soundfile not available - TTS will not work")
+    print("soundfile is unavailable, so TTS is disabled")
 
 # TensorFlow and multilingual support imports
 try:
@@ -81,9 +79,9 @@ try:
     import warnings
     warnings.filterwarnings('ignore')
     TF_AVAILABLE = True
-    print("TensorFlow and multilingual dependencies loaded successfully")
+    print("TensorFlow and multilingual dependencies loaded")
 except ImportError as e:
-    print(f"TensorFlow/multilingual not available: {e}")
+    print(f"TensorFlow or multilingual support is unavailable: {e}")
     TF_AVAILABLE = False
 
 # Initialize Flask app
@@ -109,9 +107,7 @@ CORS(app, origins=["http://localhost:3000", "http://localhost:5000", "http://127
 @app.after_request
 def add_security_headers(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
-    # Removed X-XSS-Protection as it's flagged by audit
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
-    # Removed Content-Security-Policy as it's flagged by audit
     return response
 
 # Cache headers for static files
@@ -128,156 +124,137 @@ GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
 HUGGING_FACE_API_KEY = os.getenv('HUGGING_FACE_API_KEY', '')
 DATA_GOV_IN_API_KEY = os.getenv('DATA_GOV_IN_API_KEY', '')
 
-# ===============================================
-# MODEL DOWNLOAD FUNCTION FOR CLOUD DEPLOYMENT
-# ===============================================
+# Model download helper
 def download_model_from_github(model_url, local_filename):
     """
-    Downloads a model file from a raw GitHub URL if it doesn't exist locally.
-    This enables the app to work in cloud environments without local model files.
+    Download a model file from GitHub when it is not available locally.
     """
     if os.path.exists(local_filename):
-        print(f"✅ Model file '{local_filename}' already exists locally.")
+        print(f"Model file already exists: {local_filename}")
         return True
 
     try:
-        print(f"⬇️ Downloading model from GitHub: {model_url}...")
+        print(f"Downloading model from GitHub: {model_url}")
         response = requests.get(model_url, stream=True, timeout=300)
         response.raise_for_status()
 
-        # Get file size if available
         total_size = int(response.headers.get('content-length', 0))
         if total_size:
-            print(f"📦 Model size: {total_size / (1024*1024):.2f} MB")
+            print(f"Model size: {total_size / (1024*1024):.2f} MB")
 
         with open(local_filename, 'wb') as f:
             downloaded = 0
             for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
                 downloaded += len(chunk)
-                if total_size and downloaded % (1024*1024) == 0:  # Print every MB
-                    print(f"⬇️ Downloaded: {downloaded / (1024*1024):.1f} MB / {total_size / (1024*1024):.1f} MB")
+                if total_size and downloaded % (1024*1024) == 0:
+                    print(f"Downloaded {downloaded / (1024*1024):.1f} MB of {total_size / (1024*1024):.1f} MB")
 
-        print("✅ Model downloaded successfully.")
+        print("Model download completed successfully")
         return True
     except Exception as e:
-        print(f"❌ FAILED to download model from GitHub: {e}")
+        print(f"Failed to download model from GitHub: {e}")
         if os.path.exists(local_filename):
-            os.remove(local_filename)  # Remove partial file
+            os.remove(local_filename)
         return False
 
-# ===============================================
-# TTS MODEL CONFIGURATION - LOCAL WITH HUB FALLBACK
-# ===============================================
+# TTS model configuration
 TTS_AVAILABLE = False
 tts_model = None
 tts_processor = None
 tts_description_tokenizer = None
 
-# Define both local path and Hub ID
-LOCAL_TTS_PATH = r"G:\models\indic-parler-tts"  # Your local path
-HUB_TTS_ID = "parler-tts/indic-parler-tts"      # Hugging Face Hub ID
+LOCAL_TTS_PATH = r"G:\models\indic-parler-tts"
+HUB_TTS_ID = "parler-tts/indic-parler-tts"
 
-# Set this to False to skip TTS loading entirely
-LOAD_TTS = False  # Change to True to attempt loading
+LOAD_TTS = False
 
 if LOAD_TTS:
     try:
         from transformers import AutoProcessor, AutoTokenizer, ParlerTTSForConditionalGeneration
         import torch
 
-        load_path = ""  # Variable to store the successful path/ID
+        load_path = ""
 
-        # --- TRY LOCAL FIRST ---
         try:
-            print(f"🔊 Attempting to load TTS model from local path: {LOCAL_TTS_PATH}")
-            # Check if local path exists and seems valid before attempting to load
+            print(f"Attempting to load TTS model from local path: {LOCAL_TTS_PATH}")
             if os.path.exists(LOCAL_TTS_PATH) and os.path.isdir(LOCAL_TTS_PATH):
                 tts_processor = AutoProcessor.from_pretrained(LOCAL_TTS_PATH)
                 tts_description_tokenizer = AutoTokenizer.from_pretrained(LOCAL_TTS_PATH, subfolder="text_encoder")
                 tts_model = ParlerTTSForConditionalGeneration.from_pretrained(LOCAL_TTS_PATH)
                 load_path = LOCAL_TTS_PATH
-                print(f"✅ Successfully loaded TTS model from local path.")
+                print("Loaded TTS model from local path")
             else:
-                print(f"⚠️ Local TTS path not found or invalid: {LOCAL_TTS_PATH}. Trying Hugging Face Hub...")
-                raise FileNotFoundError("Local path invalid")  # Force fallback
+                print(f"Local TTS path is not valid: {LOCAL_TTS_PATH}. Falling back to Hugging Face Hub")
+                raise FileNotFoundError("Local path invalid")
 
-        # --- FALLBACK TO HUB ---
-        except Exception as local_error:  # Catch errors during local loading
-            print(f"❌ Failed to load TTS locally ({local_error}). Attempting fallback to Hugging Face Hub: {HUB_TTS_ID}")
+        except Exception as local_error:
+            print(f"Local TTS load failed ({local_error}). Trying Hugging Face Hub: {HUB_TTS_ID}")
             try:
                 tts_processor = AutoProcessor.from_pretrained(HUB_TTS_ID)
                 tts_description_tokenizer = AutoTokenizer.from_pretrained(HUB_TTS_ID, subfolder="text_encoder")
                 tts_model = ParlerTTSForConditionalGeneration.from_pretrained(HUB_TTS_ID)
                 load_path = HUB_TTS_ID
-                print(f"✅ Successfully loaded TTS model from Hugging Face Hub.")
+                print("Loaded TTS model from Hugging Face Hub")
             except Exception as hub_error:
-                print(f"❌ Failed to load TTS model from both local path and Hugging Face Hub.")
-                print(f"   Hub Error: {hub_error}")
-                raise hub_error  # Re-raise the hub error if fallback also fails
+                print("Failed to load the TTS model from both local and Hub sources")
+                print(f"Hub error: {hub_error}")
+                raise hub_error
 
-        # --- If loading succeeded (either local or hub) ---
         if tts_model and tts_processor and tts_description_tokenizer:
             device = "cuda" if torch.cuda.is_available() else "cpu"
             tts_model.to(device)
             TTS_AVAILABLE = True
-            print(f"✅ TTS model ready (loaded from {load_path}) on device: {device}")
+            print(f"TTS model ready from {load_path} on {device}")
 
     except Exception as e:
-        # This outer except catches import errors or if both loading methods fail
-        print(f"❌ Critical error during TTS setup: {e}")
+        print(f"Critical error during TTS setup: {e}")
         TTS_AVAILABLE = False
         tts_processor = None
         tts_model = None
         tts_description_tokenizer = None
 else:
-    print("⏭️ Skipping TTS Model loading (LOAD_TTS=False). TTS features will be unavailable.")
+    print("Skipping TTS model loading because LOAD_TTS is False")
 
-# ===============================================
-# INITIALIZE LOCAL GEMMA MODEL FOR CHATBOT WITH HUB FALLBACK
-# ===============================================
-LOCAL_GEMMA_MODEL_PATH = r"G:\models\google\gemma-1.1-2b-it"  # Adjust if your local path is different
-HUB_GEMMA_ID = "google/gemma-1.1-2b-it"  # Hugging Face Hub ID
+LOCAL_GEMMA_MODEL_PATH = r"G:\models\google\gemma-1.1-2b-it"
+HUB_GEMMA_ID = "google/gemma-1.1-2b-it"
 
 gemma_model = None
 gemma_tokenizer = None
 GEMMA_AVAILABLE = False
 
-# Set this to False to skip Gemma loading entirely
-LOAD_GEMMA = False  # Change to True to attempt loading
+LOAD_GEMMA = False
 
 if LOAD_GEMMA:
-    print("🤖 Initializing Gemma Model for chat responses...")
+    print("Initializing Gemma model for chat responses")
     try:
         from transformers import AutoTokenizer, AutoModelForCausalLM
         from pathlib import Path
-        import torch  # Make sure torch is imported
+        import torch
 
-        load_path_or_id = ""  # To track where it loaded from
+        load_path_or_id = ""
 
-        # Determine device and dtype first
         if torch.cuda.is_available():
-            print("CUDA (NVIDIA GPU) found. Using GPU...")
+            print("CUDA found, using GPU")
             device_map = "auto"
             try:
                 dtype = torch.bfloat16
                 _ = torch.randn(1, device='cuda', dtype=dtype)
-                print("Using bfloat16 dtype.")
+                print("Using bfloat16")
             except Exception:
-                print("bfloat16 not supported, falling back to float16.")
                 dtype = torch.float16
+                print("bfloat16 is not supported, using float16")
         else:
-            print("WARNING: CUDA not found. Model will run on CPU (slower).")
+            print("CUDA not found, so the model will run on CPU")
             device_map = "cpu"
             dtype = torch.float32
 
-        # --- TRY LOCAL FIRST ---
         try:
-            print(f"🤖 Attempting to load Gemma model from local path: {LOCAL_GEMMA_MODEL_PATH}")
+            print(f"Attempting to load Gemma model from local path: {LOCAL_GEMMA_MODEL_PATH}")
             model_path = Path(LOCAL_GEMMA_MODEL_PATH)
             if not model_path.exists() or not model_path.is_dir():
-                print(f"⚠️ Local Gemma path not found or invalid: {LOCAL_GEMMA_MODEL_PATH}. Trying Hugging Face Hub...")
-                raise FileNotFoundError("Local path invalid")  # Force fallback
+                print(f"Local Gemma path is not valid: {LOCAL_GEMMA_MODEL_PATH}. Falling back to Hugging Face Hub")
+                raise FileNotFoundError("Local path invalid")
 
             gemma_tokenizer = AutoTokenizer.from_pretrained(LOCAL_GEMMA_MODEL_PATH)
             gemma_model = AutoModelForCausalLM.from_pretrained(
@@ -286,11 +263,10 @@ if LOAD_GEMMA:
                 torch_dtype=dtype
             )
             load_path_or_id = LOCAL_GEMMA_MODEL_PATH
-            print(f"✅ Successfully loaded Gemma model from local path.")
+            print("Loaded Gemma model from local path")
 
-        # --- FALLBACK TO HUB ---
         except Exception as local_error:
-            print(f"❌ Failed to load Gemma locally ({local_error}). Attempting fallback to Hugging Face Hub: {HUB_GEMMA_ID}")
+            print(f"Local Gemma load failed ({local_error}). Trying Hugging Face Hub: {HUB_GEMMA_ID}")
             try:
                 gemma_tokenizer = AutoTokenizer.from_pretrained(HUB_GEMMA_ID)
                 gemma_model = AutoModelForCausalLM.from_pretrained(
@@ -299,26 +275,24 @@ if LOAD_GEMMA:
                     torch_dtype=dtype
                 )
                 load_path_or_id = HUB_GEMMA_ID
-                print(f"✅ Successfully loaded Gemma model from Hugging Face Hub.")
+                print("Loaded Gemma model from Hugging Face Hub")
             except Exception as hub_error:
-                print(f"❌ Failed to load Gemma model from both local path and Hugging Face Hub.")
-                print(f"   Hub Error: {hub_error}")
-                raise hub_error  # Re-raise the hub error
+                print("Failed to load the Gemma model from both local and Hub sources")
+                print(f"Hub error: {hub_error}")
+                raise hub_error
 
-        # --- If loading succeeded ---
         if gemma_model and gemma_tokenizer:
             if device_map == "cpu":
                 gemma_model.to("cpu")
             GEMMA_AVAILABLE = True
-            print(f"✅ Gemma Model ready (loaded from {load_path_or_id})!")
+            print(f"Gemma model ready from {load_path_or_id}")
 
     except Exception as e:
-        # This catches import errors or if both methods fail
-        print(f"❌ Critical error during Gemma setup: {e}")
-        print("Will use fallback responses instead")
+        print(f"Critical error during Gemma setup: {e}")
+        print("Fallback responses will be used instead")
         GEMMA_AVAILABLE = False
 else:
-    print("⏭️ Skipping Gemma Model loading (LOAD_GEMMA=False). Using fallback chatbot.")
+    print("Skipping Gemma model loading because LOAD_GEMMA is False")
 
 # ===============================================
 # WEATHER API FUNCTION FOR GEMMA CHATBOT
