@@ -8,35 +8,31 @@ class AgriCareApp {
         this.user = null;
         this.modules = {};
         
-        // Initialize modules (functions are already available globally)
-        console.log('AgriCare modules initialized');
-    }    async init() {
-        // Initialize translation manager first
+        console.log('AgriCare modules ready');
+    }
+
+    async init() {
         if (window.translationManager) {
             await window.translationManager.init();
-            console.log('✅ Translation manager initialized');
+            console.log('Translation manager ready');
         } else {
-            console.warn('⚠️ Translation manager not found, will initialize later');
+            console.warn('Translation manager not found yet; continuing with the app');
         }
         
-        // Check authentication status
         await this.checkAuthStatus();
         
-        // Initialize event listeners
         this.initializeEventListeners();
         
-        // Set up navigation
         this.setupNavigation();
         
-        // Load initial view
         this.loadInitialView();
         
-        console.log('AgriCare application initialized');
+        console.log('AgriCare app initialized');
     }
 
     async checkAuthStatus() {
-        // For testing purposes, skip authentication and go directly to main app
-        console.log('🔧 TEST MODE: Skipping authentication');
+        // Local test build starts inside the app so UI flows can be exercised quickly.
+        console.log('Authentication is bypassed in the local test build');
         this.isAuthenticated = true;
         this.user = { email: 'test@test.com', name: 'Test User' };
         this.showView('main-app');
@@ -69,83 +65,68 @@ class AgriCareApp {
     }
 
     initializeEventListeners() {
-        console.log('Initializing event listeners...');
+        console.log('Wiring event listeners');
         
-        // Authentication form listeners
         const loginForm = document.getElementById('login-form');
         if (loginForm) {
-            console.log('✅ Login form found, adding event listener');
+            console.log('Login form ready');
             loginForm.addEventListener('submit', (e) => {
-                console.log('🎯 Login form submitted!');
                 this.handleLogin(e);
             });
         } else {
-            console.error('❌ Login form not found!');
+            console.error('Login form not found');
         }
 
         const registerForm = document.getElementById('register-form');
         if (registerForm) {
-            console.log('✅ Register form found, adding event listener');
+            console.log('Register form ready');
             registerForm.addEventListener('submit', (e) => {
-                console.log('🎯 Register form submitted!');
                 this.handleRegister(e);
             });
         } else {
-            console.error('❌ Register form not found!');
+            console.error('Register form not found');
         }
 
-        // View switching buttons
         const showRegisterBtn = document.getElementById('toggle-register-btn');
         if (showRegisterBtn) {
-            console.log('✅ Register button found, adding event listener');
+            console.log('Register button ready');
             showRegisterBtn.addEventListener('click', (e) => {
-                console.log('🎯 Register button clicked!');
                 e.preventDefault();
                 this.showView('register-page');
             });
-            
-            // Test with direct onclick
             showRegisterBtn.onclick = (e) => {
-                console.log('🎯 Register button clicked via onclick!');
                 e.preventDefault();
                 this.showView('register-page');
             };
         } else {
-            console.error('❌ Register button not found!');
+            console.error('Register button not found');
         }
 
         const showLoginBtn = document.getElementById('back-to-login-btn');
         if (showLoginBtn) {
-            console.log('✅ Back to login button found, adding event listener');
+            console.log('Back to login button ready');
             showLoginBtn.addEventListener('click', (e) => {
-                console.log('🎯 Back to login button clicked!');
                 e.preventDefault();
                 this.showView('login-page');
             });
-            
-            // Test with direct onclick
             showLoginBtn.onclick = (e) => {
-                console.log('🎯 Back to login button clicked via onclick!');
                 e.preventDefault();
                 this.showView('login-page');
             };
         } else {
-            console.error('❌ Back to login button not found!');
+            console.error('Back to login button not found');
         }
 
-        // Main app navigation
         const logoutBtn = document.getElementById('logout-btn');
         if (logoutBtn) {
             logoutBtn.addEventListener('click', () => this.logout());
         }
 
-        // Tab navigation
         const tabs = document.querySelectorAll('[data-tab]');
         tabs.forEach(tab => {
             tab.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
         });
 
-        // View buttons
         const viewButtons = {
             'weather-view-btn': 'weather-view',
             'disease-view-btn': 'disease-view',
@@ -161,24 +142,21 @@ class AgriCareApp {
             }
         });
 
-        // Developer panel access
         const devLoginBtn = document.getElementById('dev-login-btn');
         if (devLoginBtn) {
             devLoginBtn.addEventListener('click', () => this.showDeveloperLogin());
         }
 
-        // Language switcher
         const languageSelector = document.getElementById('language-selector');
         if (languageSelector) {
             languageSelector.addEventListener('change', (e) => this.changeLanguage(e.target.value));
         }
 
-        // Main menu navigation
         this.initializeMenuCards();
     }
 
     initializeMenuCards() {
-        console.log('🎯 Initializing menu cards...');
+        console.log('Initializing menu cards');
         
         const menuCards = {
             'menu-weather': 'weather-view',
@@ -190,38 +168,29 @@ class AgriCareApp {
         Object.entries(menuCards).forEach(([menuId, viewId]) => {
             const menuCard = document.getElementById(menuId);
             if (menuCard) {
-                console.log(`✅ Menu card ${menuId} found, adding event listener for ${viewId}`);
-                
-                // Remove existing listeners to avoid duplicates
+                console.log(`Menu card ready: ${menuId}`);
+
                 menuCard.removeEventListener('click', menuCard._clickHandler);
                 menuCard.removeEventListener('keydown', menuCard._keydownHandler);
-                
-                // Create new handlers
+
                 menuCard._clickHandler = (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log(`🎯 Menu card ${menuId} clicked! Showing ${viewId}`);
-                    console.log('Event target:', e.target);
-                    console.log('Event currentTarget:', e.currentTarget);
                     this.showView(viewId);
-                    return false; // Prevent any default button behavior
+                    return false;
                 };
                 
                 menuCard._keydownHandler = (e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
-                        console.log(`🎯 Menu card ${menuId} activated via keyboard, showing ${viewId}`);
+                        console.log(`Keyboard activation on ${menuId}`);
                         this.showView(viewId);
                     }
                 };
-                
-                // Add new listeners
+
                 menuCard.addEventListener('click', menuCard._clickHandler);
                 menuCard.addEventListener('keydown', menuCard._keydownHandler);
-                
-                console.log(`✅ Event listeners attached to ${menuId}`);
-                
-                // Also add back button functionality
+
                 const backBtn = document.getElementById('back-to-menu-btn');
                 if (backBtn) {
                     backBtn.addEventListener('click', () => {
@@ -231,11 +200,11 @@ class AgriCareApp {
                 }
                 
             } else {
-                console.error(`❌ Menu card ${menuId} not found!`);
+                console.error(`Menu card not found: ${menuId}`);
             }
         });
         
-        console.log('🎯 Menu cards initialization complete');
+        console.log('Menu cards ready');
     }
 
     setupNavigation() {
@@ -264,23 +233,17 @@ class AgriCareApp {
     }
 
     async handleLogin(e) {
-        console.log('🔐 handleLogin called');
         e.preventDefault();
         
-        const email = document.getElementById('username').value;  // Updated to match HTML
+        const email = document.getElementById('username').value;
         const password = document.getElementById('password').value;
 
-        console.log('📧 Email:', email);
-        console.log('🔑 Password length:', password ? password.length : 0);
-
         if (!email || !password) {
-            console.log('❌ Missing email or password');
             this.showNotification('Please fill in all fields', 'error');
             return;
         }
 
         try {
-            console.log('🌐 Sending login request...');
             const response = await fetch(`${API_CONFIG.BASE_URL}/auth/login`, {
                 method: 'POST',
                 headers: {
@@ -289,9 +252,7 @@ class AgriCareApp {
                 body: JSON.stringify({ email, password })
             });
 
-            console.log('📡 Response status:', response.status);
             const data = await response.json();
-            console.log('📋 Response data:', data);
 
             if (response.ok) {
                 localStorage.setItem('agricare_token', data.token);
@@ -305,51 +266,42 @@ class AgriCareApp {
                 this.showNotification(data.message || 'Login failed', 'error');
             }
         } catch (error) {
-            console.error('Login error:', error);
+            console.error('Login request failed:', error);
             this.showNotification('Network error. Please try again.', 'error');
         }
     }
 
     async handleRegister(e) {
-        console.log('📝 handleRegister called');
         e.preventDefault();
         
-        const email = document.getElementById('register-email').value;  // Updated to match HTML
-        const password = document.getElementById('register-password').value;  // Updated to match HTML
-
-        console.log('📧 Register Email:', email);
-        console.log('🔑 Register Password length:', password ? password.length : 0);
+        const email = document.getElementById('register-email').value;
+        const password = document.getElementById('register-password').value;
 
         if (!email || !password) {
-            console.log('❌ Missing email or password');
             this.showNotification('Please fill in all fields', 'error');
             return;
         }
 
         try {
-            console.log('🌐 Sending register request...');
             const response = await fetch(`${API_CONFIG.BASE_URL}/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ email, password })  // Removed name since it's not in the form
+                body: JSON.stringify({ email, password })
             });
 
-            console.log('📡 Response status:', response.status);
             const data = await response.json();
-            console.log('📋 Response data:', data);
 
             if (response.ok) {
                 this.showNotification('Registration successful! Please login.', 'success');
                 this.showView('login-page');
-                // Clear form
                 document.getElementById('register-form').reset();
             } else {
                 this.showNotification(data.message || 'Registration failed', 'error');
             }
         } catch (error) {
-            console.error('Registration error:', error);
+            console.error('Registration request failed:', error);
             this.showNotification('Network error. Please try again.', 'error');
         }
     }
@@ -363,19 +315,16 @@ class AgriCareApp {
     }
 
     showView(viewId, pushState = true) {
-        console.log(`🎯 Showing view: ${viewId}`);
+        console.log(`Showing view: ${viewId}`);
         
-        // Hide all views - look for specific view containers
         const authContainer = document.getElementById('auth-container');
         const mainApp = document.getElementById('main-app');
         const devApp = document.getElementById('dev-app');
         
-        // Hide all containers first
         if (authContainer) authContainer.classList.add('hidden');
         if (mainApp) mainApp.classList.add('hidden');
         if (devApp) devApp.classList.add('hidden');
         
-        // Hide all pages within auth container
         const loginPage = document.getElementById('login-page');
         const registerPage = document.getElementById('register-page');
         
@@ -660,20 +609,10 @@ class AgriCareApp {
 
 // Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 DOM loaded, initializing AgriCare app...');
-    
-    // Debug: Check if key elements exist
-    console.log('🔍 Checking for elements:');
-    console.log('- Login form:', document.getElementById('login-form'));
-    console.log('- Register form:', document.getElementById('register-form'));
-    console.log('- Toggle register btn:', document.getElementById('toggle-register-btn'));
-    console.log('- Back to login btn:', document.getElementById('back-to-login-btn'));
-    
-    // Initialize the main application
+    console.log('Initializing AgriCare app');
+
     window.agriCareApp = new AgriCareApp();
     window.agriCareApp.init();
-    
-    console.log('✅ AgriCare app initialized');
 });
 
 // Export for use in other modules
