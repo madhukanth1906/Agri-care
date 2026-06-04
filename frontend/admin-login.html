@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - AgriCare</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE2IDJDMTggMiAyMCA0IDIwIDZWMTBIMjRDMjYgMTAgMjggMTIgMjggMTRWMjBDMjggMjIgMjYgMjQgMjQgMjRIMjBWMjhDMjAgMzAgMTggMzIgMTYgMzJDMTQgMzIgMTIgMzAgMTIgMjhWMjRIOEMgNiAyNCA0IDIyIDQgMjBWMTRDIDQgMTIgNiAxMCA4IDEwSDEyVjZDIDEyIDQgMTQgMiAxNiAyWiIgZmlsbD0iIzE2YTM0YSIvPgo8L3N2Zz4K">
+</head>
+<body class="bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 min-h-screen flex items-center justify-center p-4">
+    
+    <!-- Admin Login Card -->
+    <div class="w-full max-w-md">
+        <div class="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-green-600 to-emerald-600 p-8 text-center">
+                <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-shield-alt text-4xl text-white"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-white">Admin Login</h1>
+                <p class="text-green-100 mt-2">AgriCare Admin Panel</p>
+            </div>
+
+            <!-- Login Form -->
+            <div class="p-8">
+                <div id="error-message" class="hidden mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    <span id="error-text"></span>
+                </div>
+
+                <form id="admin-login-form" class="space-y-6">
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-envelope text-green-600 mr-2"></i>Email Address
+                        </label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            required
+                            value="admin@agricare"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                            placeholder="admin@agricare"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-lock text-green-600 mr-2"></i>Password
+                        </label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                            placeholder="Enter password"
+                        >
+                    </div>
+
+                    <button 
+                        type="submit" 
+                        id="login-btn"
+                        class="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold px-6 py-3 rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-green-300 flex items-center justify-center gap-2"
+                    >
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Sign In</span>
+                    </button>
+                </form>
+
+                <!-- Back to Main Site -->
+                <div class="mt-6 pt-6 border-t border-gray-200 text-center">
+                    <a href="index.html" class="text-green-600 hover:text-green-700 text-sm font-medium flex items-center justify-center gap-2">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Main Site
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Note -->
+        <div class="mt-6 text-center text-sm text-gray-600 bg-white/60 backdrop-blur-sm rounded-lg p-4">
+            <i class="fas fa-info-circle text-green-600 mr-1"></i>
+            Admin login credentials are required to access the admin panel
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5000';
+
+        document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('login-btn');
+            const errorMessage = document.getElementById('error-message');
+            
+            // Hide previous error
+            errorMessage.classList.add('hidden');
+            
+            // Disable button and show loading
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Signing in...</span>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/admin/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Store admin token
+                    localStorage.setItem('admin_token', data.access_token);
+                    localStorage.setItem('admin_user', JSON.stringify(data.user));
+                    
+                    // Show success and redirect
+                    loginBtn.innerHTML = '<i class="fas fa-check-circle"></i><span>Success!</span>';
+                    loginBtn.classList.remove('from-green-600', 'to-emerald-600');
+                    loginBtn.classList.add('from-green-500', 'to-green-500');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'admin-role-selection.html';
+                    }, 500);
+                } else {
+                    throw new Error(data.error || 'Login failed');
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                document.getElementById('error-text').textContent = error.message || 'Invalid credentials. Please try again.';
+                errorMessage.classList.remove('hidden');
+                
+                // Reset button
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i><span>Sign In</span>';
+            }
+        });
+    </script>
+</body>
+</html>

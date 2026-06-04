@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - AgriCare</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE2IDJDMTggMiAyMCA0IDIwIDZWMTBIMjRDMjYgMTAgMjggMTIgMjggMTRWMjBDMjggMjIgMjYgMjQgMjQgMjRIMjBWMjhDMjAgMzAgMTggMzIgMTYgMzJDMTQgMzIgMTIgMzAgMTIgMjhWMjRIOEMgNiAyNCA0IDIyIDQgMjBWMTRDIDQgMTIgNiAxMCA4IDEwSDEyVjZDIDEyIDQgMTQgMiAxNiAyWiIgZmlsbD0iIzE2YTM0YSIvPgo8L3N2Zz4K">
+    <style>
+        #sidebar {
+            transition: margin-left 0.3s;
+        }
+
+        .active-nav {
+            background: linear-gradient(to right, #10b981, #059669);
+            color: white;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+
+    <!-- Sidebar -->
+    <aside id="sidebar"
+        class="fixed left-0 top-0 h-screen w-64 bg-gradient-to-b from-green-600 to-emerald-700 text-white shadow-2xl z-50">
+        <div class="p-6 border-b border-green-500">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-leaf text-3xl"></i>
+                <div>
+                    <h1 class="text-2xl font-bold">AgriCare</h1>
+                    <p class="text-xs text-green-200">Admin Panel</p>
+                </div>
+            </div>
+        </div>
+
+        <nav class="p-4">
+            <a href="#"
+                class="nav-link active-nav flex items-center gap-3 p-3 rounded-lg mb-2 hover:bg-white/10 transition"
+                data-section="overview">
+                <i class="fas fa-th-large w-5"></i><span>Overview</span>
+            </a>
+            <a href="#" class="nav-link flex items-center gap-3 p-3 rounded-lg mb-2 hover:bg-white/10 transition"
+                data-section="users">
+                <i class="fas fa-users w-5"></i><span>Users</span>
+            </a>
+            <a href="#" class="nav-link flex items-center gap-3 p-3 rounded-lg mb-2 hover:bg-white/10 transition"
+                data-section="chats">
+                <i class="fas fa-comments w-5"></i><span>Chat Logs</span>
+            </a>
+            <a href="#" class="nav-link flex items-center gap-3 p-3 rounded-lg mb-2 hover:bg-white/10 transition"
+                data-section="disease">
+                <i class="fas fa-bug w-5"></i><span>Disease Detections</span>
+            </a>
+            <a href="#" class="nav-link flex items-center gap-3 p-3 rounded-lg mb-2 hover:bg-white/10 transition"
+                data-section"system">
+                <i class="fas fa-server w-5"></i><span>System Health</span>
+            </a>
+        </nav>
+
+        <div class="absolute bottom-0 w-full p-4 border-t border-green-500">
+            <button onclick="goBackToSelection()"
+                class="w-full bg-white/10 hover:bg-white/20 p-3 rounded-lg mb-2 flex items-center justify-center gap-2">
+                <i class="fas fa-arrow-left"></i>Back
+            </button>
+            <button onclick="logout()"
+                class="w-full bg-red-500/80 hover:bg-red-600 p-3 rounded-lg flex items-center justify-center gap-2">
+                <i class="fas fa-sign-out-alt"></i>Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main id="main-content" class="ml-64 min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-sm sticky top-0 z-40 px-8 py-4 flex justify-between items-center">
+            <div>
+                <h2 id="section-title" class="text-2xl font-bold text-gray-800">Dashboard Overview</h2>
+                <p class="text-sm text-gray-500" id="admin-email"></p>
+            </div>
+            <div class="text-right">
+                <p class="text-sm text-gray-600">Admin Account</p>
+                <p class="font-semibold">Administrator</p>
+            </div>
+        </header>
+
+        <!-- Overview Section -->
+        <section id="overview-section" class="p-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-2xl shadow-lg">
+                    <div class="flex justify-between items-start mb-4">
+                        <i class="fas fa-users text-4xl opacity-80"></i>
+                        <span class="bg-white/20 px-3 py-1 rounded-full text-sm">Total</span>
+                    </div>
+                    <h3 class="text-3xl font-bold" id="stat-users">0</h3>
+                    <p class="text-blue-100">Total Users</p>
+                </div>
+
+                <div class="bg-gradient-to-br from-green-500 to-emerald-600 text-white p-6 rounded-2xl shadow-lg">
+                    <div class="flex justify-between items-start mb-4">
+                        <i class="fas fa-comments text-4xl opacity-80"></i>
+                        <span class="bg-white/20 px-3 py-1 rounded-full text-sm">Chats</span>
+                    </div>
+                    <h3 class="text-3xl font-bold" id="stat-chats">0</h3>
+                    <p class="text-green-100">Total Conversations</p>
+                </div>
+
+                <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-6 rounded-2xl shadow-lg">
+                    <div class="flex justify-between items-start mb-4">
+                        <i class="fas fa-bug text-4xl opacity-80"></i>
+                        <span class="bg-white/20 px-3 py-1 rounded-full text-sm">Total</span>
+                    </div>
+                    <h3 class="text-3xl font-bold" id="stat-disease">0</h3>
+                    <p class="text-purple-100">Disease Detections</p>
+                </div>
+
+                <div class="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-6 rounded-2xl shadow-lg">
+                    <div class="flex justify-between items-start mb-4">
+                        <i class="fas fa-server text-4xl opacity-80"></i>
+                        <span class="bg-white/20 px-3 py-1 rounded-full text-sm">Status</span>
+                    </div>
+                    <h3 class="text-2xl font-bold">Running</h3>
+                    <p class="text-orange-100">System Status</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <h3 class="text-xl font-bold mb-4">Quick Actions</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <button onclick="showSection('users')"
+                        class="p-4 bg-blue-50 hover:bg-blue-100 rounded-xl transition">
+                        <i class="fas fa-users text-2xl text-blue-600 mb-2"></i>
+                        <p class="text-sm font-medium">Manage Users</p>
+                    </button>
+                    <button onclick="showSection('chats')"
+                        class="p-4 bg-green-50 hover:bg-green-100 rounded-xl transition">
+                        <i class="fas fa-comments text-2xl text-green-600 mb-2"></i>
+                        <p class="text-sm font-medium">View Chats</p>
+                    </button>
+                    <button onclick="showSection('disease')"
+                        class="p-4 bg-purple-50 hover:bg-purple-100 rounded-xl transition">
+                        <i class="fas fa-bug text-2xl text-purple-600 mb-2"></i>
+                        <p class="text-sm font-medium">Detections</p>
+                    </button>
+                    <button onclick="showSection('system')"
+                        class="p-4 bg-orange-50 hover:bg-orange-100 rounded-xl transition">
+                        <i class="fas fa-cog text-2xl text-orange-600 mb-2"></i>
+                        <p class="text-sm font-medium">System Health</p>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Users Section -->
+        <section id="users-section" class="p-8 hidden">
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold">User Management</h3>
+                    <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"><i
+                            class="fas fa-user-plus mr-2"></i>Add User</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body" class="divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chat Logs Section -->
+        <section id="chats-section" class="p-8 hidden">
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <h3 class="text-2xl font-bold mb-6">Chatbot Conversations</h3>
+                <div id="chats-list" class="space-y-4"></div>
+            </div>
+        </section>
+
+        <!-- Disease Detections Section -->
+        <section id="disease-section" class="p-8 hidden">
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <h3 class="text-2xl font-bold mb-6">Disease Detection History</h3>
+                <div id="disease-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </div>
+        </section>
+
+        <!-- System Health Section -->
+        <section id="system-section" class="p-8 hidden">
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <h3 class="text-2xl font-bold mb-6">System Health Metrics</h3>
+                <div id="system-health" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const API_BASE = 'http://localhost:5000';
+        let adminToken = '';
+
+        // Auth check
+        window.addEventListener('DOMContentLoaded', () => {
+            adminToken = localStorage.getItem('admin_token');
+            const user = localStorage.getItem('admin_user');
+
+            if (!adminToken || !user) {
+                window.location.href = 'admin-login.html';
+                return;
+            }
+
+            const userData = JSON.parse(user);
+            document.getElementById('admin-email').textContent = userData.email;
+
+            loadAnalytics();
+        });
+
+        // Load analytics
+        async function loadAnalytics() {
+            try {
+                const res = await fetch(`${API_BASE}/api/admin/analytics/overview`, {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+                const data = await res.json();
+
+                if (data.success && data.analytics) {
+                    document.getElementById('stat-users').textContent = data.analytics.total_users;
+                    document.getElementById('stat-chats').textContent = data.analytics.total_chats;
+                    document.getElementById('stat-disease').textContent = data.analytics.total_disease_detections;
+                }
+            } catch (e) {
+                console.error('Analytics error:', e);
+            }
+        }
+
+        // Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const section = link.dataset.section;
+                showSection(section);
+
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active-nav'));
+                link.classList.add('active-nav');
+            });
+        });
+
+        function showSection(section) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`${section}-section`).classList.remove('hidden');
+
+            const titles = {
+                overview: 'Dashboard Overview',
+                users: 'User Management',
+                chats: 'Chat Logs',
+                disease: 'Disease Detections',
+                system: 'System Health'
+            };
+            document.getElementById('section-title').textContent = titles[section];
+
+            if (section === 'users') loadUsers();
+            if (section === 'chats') loadChats();
+            if (section === 'disease') loadDiseaseDetections();
+            if (section === 'system') loadSystemHealth();
+        }
+
+        async function loadUsers() {
+            try {
+                const res = await fetch(`${API_BASE}/api/admin/users`, {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+                const data = await res.json();
+
+                const tbody = document.getElementById('users-table-body');
+                tbody.innerHTML = data.users?.map(u => `
+                    <tr>
+                        <td class="px-6 py-4">${u.full_name || 'N/A'}</td>
+                        <td class="px-6 py-4">${u.email}</td>
+                        <td class="px-6 py-4">${new Date(u.created_at?._seconds * 1000 || Date.now()).toLocaleDateString()}</td>
+                        <td class="px-6 py-4">
+                            <button class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-edit"></i></button>
+                            <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join('') || '<tr><td colspan="4" class="text-center py-8 text-gray-500">No users found</td></tr>';
+            } catch (e) {
+                console.error('Load users error:', e);
+            }
+        }
+
+        async function loadChats() {
+            try {
+                const res = await fetch(`${API_BASE}/api/admin/chatbot/conversations`, {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+                const data = await res.json();
+
+                const list = document.getElementById('chats-list');
+                list.innerHTML = data.conversations?.map(c => `
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <div class="flex justify-between mb-2">
+                            <span class="font-medium">${c.user_id || 'Anonymous'}</span>
+                            <span class="text-sm text-gray-500">${new Date(c.timestamp?._seconds * 1000 || Date.now()).toLocaleString()}</span>
+                        </div>
+                        <p class="text-sm text-gray-700">${c.message || 'No message'}</p>
+                    </div>
+                `).join('') || '<p class="text-center text-gray-500 py-8">No conversations yet</p>';
+            } catch (e) {
+                console.error('Load chats error:', e);
+            }
+        }
+
+        async function loadDiseaseDetections() {
+            try {
+                const res = await fetch(`${API_BASE}/api/admin/disease-detections`, {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+                const data = await res.json();
+
+                const list = document.getElementById('disease-list');
+                list.innerHTML = data.detections?.map(d => `
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <div class="mb-2">
+                            <span class="font-medium text-purple-600">${d.disease || 'Unknown'}</span>
+                        </div>
+                        <p class="text-xs text-gray-500">${new Date(d.timestamp?._seconds * 1000 || Date.now()).toLocaleString()}</p>
+                    </div>
+                `).join('') || '<p class="text-center text-gray-500 py-8 col-span-full">No detections yet</p>';
+            } catch (e) {
+                console.error('Load disease error:', e);
+            }
+        }
+
+        async function loadSystemHealth() {
+            try {
+                const res = await fetch(`${API_BASE}/api/admin/system/health`, {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+                const data = await res.json();
+
+                const health = data.health;
+                const list = document.getElementById('system-health');
+                list.innerHTML = `
+                    <div class="p-4 bg-green-50 rounded-lg"><i class="fas fa-check-circle text-green-600 mr-2"></i>Server: ${health.server_status}</div>
+                    <div class="p-4 ${health.firebase ? 'bg-green-50' : 'bg-red-50'} rounded-lg"><i class="fas ${health.firebase ? 'fa-check' : 'fa-times'}-circle text-${health.firebase ? 'green' : 'red'}-600 mr-2"></i>Firebase: ${health.firebase ? 'Active' : 'Inactive'}</div>
+                    <div class="p-4 bg-green-50 rounded-lg"><i class="fas fa-check-circle text-green-600 mr-2"></i>Gemini API: Active</div>
+                    <div class="p-4 ${health.translation_available ? 'bg-green-50' : 'bg-yellow-50'} rounded-lg"><i class="fas ${health.translation_available ? 'fa-check' : 'fa-exclamation'}-circle text-${health.translation_available ? 'green' : 'yellow'}-600 mr-2"></i>Translation: ${health.translation_available ? 'Active' : 'Limited'}</div>
+                    <div class="p-4 bg-gray-50 rounded-lg"><i class="fas fa-clock text-gray-600 mr-2"></i>Uptime: ${health.uptime}</div>
+                    <div class="p-4 bg-blue-50 rounded-lg"><i class="fas fa-calendar text-blue-600 mr-2"></i>${new Date(health.timestamp).toLocaleString()}</div>
+                `;
+            } catch (e) {
+                console.error('Load health error:', e);
+            }
+        }
+
+        function goBackToSelection() {
+            window.location.href = 'admin-role-selection.html';
+        }
+
+        function logout() {
+            if (confirm('Logout?')) {
+                localStorage.removeItem('admin_token');
+                localStorage.removeItem('admin_user');
+                window.location.href = 'admin-login.html';
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Role - AgriCare Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE2IDJDMTggMiAyMCA0IDIwIDZWMTBIMjRDMjYgMTAgMjggMTIgMjggMTRWMjBDMjggMjIgMjYgMjQgMjQgMjRIMjBWMjhDMjAgMzAgMTggMzIgMTYgMzJDMTQgMzIgMTIgMzAgMTIgMjhWMjRIOEMgNiAyNCA0IDIyIDQgMjBWMTRDIDQgMTIgNiAxMCA4IDEwSDEyVjZDIDEyIDQgMTQgMiAxNiAyWiIgZmlsbD0iIzE2YTM0YSIvPgo8L3N2Zz4K">
+</head>
+
+<body
+    class="bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-4xl">
+        <!-- Welcome Header -->
+        <div class="text-center mb-12">
+            <div class="inline-flex items-center gap-3 mb-4">
+                <i class="fas fa-leaf text-5xl text-green-600"></i>
+                <h1 class="text-4xl font-bold text-gray-800">AgriCare</h1>
+            </div>
+            <p class="text-xl text-gray-600">Welcome, <span id="admin-name"
+                    class="font-semibold text-green-600">Administrator</span></p>
+            <p class="text-gray-500 mt-2">Please select how you want to proceed</p>
+        </div>
+
+        <!-- Role Selection Cards -->
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Normal User Card -->
+            <div class="group cursor-pointer" onclick="selectRole('user')">
+                <div
+                    class="bg-white/90 backdrop-blur-xl rounded-3xl shadow-xl overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl border-2 border-transparent hover:border-green-500">
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 p-8 text-center">
+                        <div class="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-user text-5xl text-white"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-white">Normal User</h2>
+                        <p class="text-blue-100 mt-2">Access AgriCare as a regular user</p>
+                    </div>
+                    <div class="p-8">
+                        <ul class="space-y-3 text-gray-700">
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-check-circle text-blue-500 mt-1"></i>
+                                <span>Use chatbot for farming advice</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-check-circle text-blue-500 mt-1"></i>
+                                <span>Check weather forecasts</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-check-circle text-blue-500 mt-1"></i>
+                                <span>Detect plant diseases</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-check-circle text-blue-500 mt-1"></i>
+                                <span>View market prices</span>
+                            </li>
+                        </ul>
+                        <button
+                            class="w-full mt-6 bg-blue-600 text-white font-semibold py-3 rounded-xl hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                            <span>Continue as User</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Panel Card -->
+            <div class="group cursor-pointer" onclick="selectRole('admin')">
+                <div
+                    class="bg-white/90 backdrop-blur-xl rounded-3xl shadow-xl overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl border-2 border-transparent hover:border-emerald-500">
+                    <div class="bg-gradient-to-br from-emerald-500 to-green-600 p-8 text-center">
+                        <div class="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-shield-alt text-5xl text-white"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-white">Admin Panel</h2>
+                        <p class="text-emerald-100 mt-2">Manage the AgriCare system</p>
+                    </div>
+                    <div class="p-8">
+                        <ul class="space-y-3 text-gray-700">
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-check-circle text-emerald-500 mt-1"></i>
+                                <span>Manage all users</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-check-circle text-emerald-500 mt-1"></i>
+                                <span>View analytics & statistics</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-check-circle text-emerald-500 mt-1"></i>
+                                <span>Monitor chatbot conversations</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-check-circle text-emerald-500 mt-1"></i>
+                                <span>System health monitoring</span>
+                            </li>
+                        </ul>
+                        <button
+                            class="w-full mt-6 bg-gradient-to-r from-emerald-600 to-green-600 text-white font-semibold py-3 rounded-xl hover:from-emerald-700 hover:to-green-700 transition-colors flex items-center justify-center gap-2">
+                            <span>Open Admin Panel</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logout Button -->
+        <div class="text-center mt-8">
+            <button onclick="logout()"
+                class="text-gray-600 hover:text-red-600 transition-colors flex items-center justify-center gap-2 mx-auto text-sm">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Check if admin is logged in
+        window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('admin_token');
+            const user = localStorage.getItem('admin_user');
+
+            if (!token || !user) {
+                window.location.href = 'admin-login.html';
+                return;
+            }
+
+            // Display admin name
+            try {
+                const userData = JSON.parse(user);
+                document.getElementById('admin-name').textContent = userData.name || 'Administrator';
+            } catch (e) {
+                console.error('Error parsing user data:', e);
+            }
+        });
+
+        function selectRole(role) {
+            if (role === 'user') {
+                // Open main app as normal user
+                window.location.href = 'index.html';
+            } else if (role === 'admin') {
+                // Open admin dashboard
+                window.location.href = 'admin-dashboard.html';
+            }
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('admin_token');
+                localStorage.removeItem('admin_user');
+                window.location.href = 'admin-login.html';
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriCare - Debug Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="bg-white p-8 rounded-lg shadow-lg">
+            <h1 class="text-2xl font-bold text-green-600 mb-4">AgriCare Debug Test</h1>
+            <p class="text-gray-700 mb-4">If you can see this, the basic HTML is loading correctly.</p>
+            <button id="test-btn" class="bg-green-600 text-white px-4 py-2 rounded">Test JavaScript</button>
+            <div id="result" class="mt-4 hidden">
+                <p class="text-green-700">✅ JavaScript is working!</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        console.log('🚀 Debug page loaded');
+        document.getElementById('test-btn').addEventListener('click', function() {
+            console.log('🎯 Button clicked');
+            document.getElementById('result').classList.remove('hidden');
+        });
+        
+        // Test if we can access the main index.html elements
+        setTimeout(() => {
+            console.log('🔍 Checking for main app elements...');
+            const mainApp = document.getElementById('main-app');
+            const authContainer = document.getElementById('auth-container');
+            console.log('Main app found:', !!mainApp);
+            console.log('Auth container found:', !!authContainer);
+        }, 1000);
+    </script>
+</body>
+</html>

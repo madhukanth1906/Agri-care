@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>i18n Translation Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; color: #155724; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+        pre { background: #f5f5f5; padding: 10px; overflow-x: auto; }
+        #translations { margin-top: 20px; }
+        .translation-item { padding: 8px; border-bottom: 1px solid #eee; }
+        .translation-item:hover { background: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <h1>🧪 AgriCare i18n Translation Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Controls</h2>
+        <button onclick="testDirectAPI()">1. Test Sarvam API Directly</button>
+        <button onclick="testAllLanguages()">2. Test All 13 Languages</button>
+        <button onclick="clearCache()">3. Clear Translation Cache</button>
+        <button onclick="testChangeLanguage('hi')">4. Change to Hindi</button>
+        <button onclick="testChangeLanguage('ta')">5. Change to Tamil</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Phrases</h2>
+        <div id="test-phrases">
+            <p data-i18n="welcome.title">Welcome to AgriCare</p>
+            <p data-i18n="nav.home">Dashboard</p>
+            <p data-i18n="nav.weather">Weather</p>
+            <p data-i18n="nav.chat">AgriBot Assistant</p>
+            <p data-i18n="settings.title">Settings</p>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Translation Results</h2>
+        <div id="results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Cached Translations</h2>
+        <button onclick="showCachedTranslations()">Show All Cached</button>
+        <div id="translations"></div>
+    </div>
+
+    <script src="js/i18n-system.js"></script>
+    <script>
+        const resultsDiv = document.getElementById('results');
+        
+        function log(message, type = 'info') {
+            const p = document.createElement('div');
+            p.textContent = new Date().toLocaleTimeString() + ' - ' + message;
+            p.className = type === 'error' ? 'error' : 'success';
+            p.style.padding = '8px';
+            p.style.marginBottom = '5px';
+            p.style.borderRadius = '3px';
+            resultsDiv.insertBefore(p, resultsDiv.firstChild);
+        }
+        
+        async function testDirectAPI() {
+            log('Testing Sarvam API directly...');
+            try {
+                const response = await fetch('http://localhost:5000/api/translate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: 'Welcome to AgriCare',
+                        target_lang: 'hi',
+                        user_preferred_lang: 'hi'
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    log(`✅ API Response: "${data.translated_text}"`, 'success');
+                    log(`Original: "${data.original_text}"`, 'success');
+                } else {
+                    log(`❌ API Error: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Request failed: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testAllLanguages() {
+            const languages = ['hi', 'ta', 'te', 'bn', 'mr', 'gu', 'kn', 'ml', 'pa', 'or', 'as', 'ur'];
+            log(`Testing translation for ${languages.length} languages...`);
+            
+            for (const lang of languages) {
+                try {
+                    const response = await fetch('http://localhost:5000/api/translate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            text: 'Dashboard',
+                            target_lang: lang
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        log(`${lang.toUpperCase()}: ${data.translated_text}`, 'success');
+                    }
+                } catch (error) {
+                    log(`${lang.toUpperCase()}: Error - ${error.message}`, 'error');
+                }
+                
+                // Small delay between requests
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+        }
+        
+        function clearCache() {
+            const languages = ['hi', 'ta', 'te', 'bn', 'mr', 'gu', 'kn', 'ml', 'pa', 'or', 'as', 'ur'];
+            languages.forEach(lang => {
+                localStorage.removeItem(`translations_${lang}`);
+            });
+            localStorage.removeItem('appLanguage');
+            log('✅ All translation caches cleared', 'success');
+        }
+        
+        async function testChangeLanguage(lang) {
+            log(`Changing language to ${lang}...`);
+            if (window.AgriCareI18n) {
+                await window.AgriCareI18n.changeLanguage(lang);
+                log(`✅ Language changed to ${lang}`, 'success');
+                log(`Check the test phrases above - they should be translated!`, 'success');
+            } else {
+                log('❌ AgriCareI18n not loaded', 'error');
+            }
+        }
+        
+        function showCachedTranslations() {
+            const translationsDiv = document.getElementById('translations');
+            translationsDiv.innerHTML = '<h3>Cached Languages:</h3>';
+            
+            const languages = ['hi', 'ta', 'te', 'bn', 'mr', 'gu', 'kn', 'ml', 'pa', 'or', 'as', 'ur'];
+            languages.forEach(lang => {
+                const cached = localStorage.getItem(`translations_${lang}`);
+                if (cached) {
+                    try {
+                        const data = JSON.parse(cached);
+                        const count = Object.keys(data).length;
+                        const sample = Object.values(data).slice(0, 3).join(', ');
+                        
+                        const div = document.createElement('div');
+                        div.className = 'translation-item';
+                        div.innerHTML = `
+                            <strong>${lang.toUpperCase()}</strong>: ${count} translations<br>
+                            <small>Sample: ${sample}...</small>
+                        `;
+                        translationsDiv.appendChild(div);
+                    } catch (e) {
+                        console.error(`Error parsing ${lang}:`, e);
+                    }
+                }
+            });
+            
+            const currentLang = localStorage.getItem('appLanguage');
+            if (currentLang) {
+                translationsDiv.innerHTML += `<p><strong>Current Language:</strong> ${currentLang}</p>`;
+            }
+        }
+        
+        // Log initialization
+        window.addEventListener('load', () => {
+            log('Page loaded. i18n system should initialize automatically.', 'success');
+            setTimeout(() => {
+                if (window.AgriCareI18n) {
+                    log(`✅ AgriCareI18n is available`, 'success');
+                    log(`Current language: ${window.AgriCareI18n.getCurrentLanguage()}`, 'success');
+                } else {
+                    log('❌ AgriCareI18n not available', 'error');
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriCare Translation Demo - Language Preferences</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+            <h1 class="text-3xl font-bold text-green-600 mb-2">🌾 AgriCare Translation Demo</h1>
+            <p class="text-gray-600 dark:text-gray-300">Powered by Sarvam AI - 13 Indian Languages</p>
+        </div>
+
+        <!-- Language Preference Section -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
+                🌐 Language Preferences
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Browser Language -->
+                <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Browser Language:</p>
+                    <p class="text-lg font-semibold text-blue-600" id="browserLang">-</p>
+                </div>
+
+                <!-- Current Preference -->
+                <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Your Preference:</p>
+                    <p class="text-lg font-semibold text-green-600" id="currentLangDisplay">-</p>
+                </div>
+            </div>
+
+            <!-- Language Selector -->
+            <div class="mt-4">
+                <label for="languageSelect" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Choose Your Language:
+                </label>
+                <div class="flex gap-2">
+                    <select id="languageSelect" 
+                            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <option value="">Loading languages...</option>
+                    </select>
+                    <button onclick="saveLanguagePreference()" 
+                            class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                        💾 Save
+                    </button>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                    Your preference will be saved and used for all translations
+                </p>
+            </div>
+        </div>
+
+        <!-- Translation Section -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
+                📝 Try Translation
+            </h2>
+
+            <!-- Input Text -->
+            <div class="mb-4">
+                <label for="inputText" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Enter Text (any language):
+                </label>
+                <textarea id="inputText" 
+                          rows="4" 
+                          placeholder="Type anything... e.g., 'Agriculture is the backbone of India'"
+                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"></textarea>
+            </div>
+
+            <!-- Target Language Override (Optional) -->
+            <div class="mb-4">
+                <label for="targetLangOverride" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Translate To (optional - uses your preference by default):
+                </label>
+                <select id="targetLangOverride" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <option value="">Use my saved preference</option>
+                </select>
+            </div>
+
+            <!-- Translate Button -->
+            <button onclick="translateText()" 
+                    class="w-full py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition">
+                🌐 Translate
+            </button>
+
+            <!-- Output -->
+            <div id="output" class="hidden mt-6">
+                <div class="bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-sm font-medium text-green-700 dark:text-green-300">Detected Source:</span>
+                        <span id="detectedLang" class="text-sm text-green-600 dark:text-green-400">-</span>
+                    </div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-sm font-medium text-green-700 dark:text-green-300">Translated To:</span>
+                        <span id="targetLangUsed" class="text-sm text-green-600 dark:text-green-400">-</span>
+                    </div>
+                    <p class="text-lg text-gray-800 dark:text-gray-200 font-medium" id="outputText">-</p>
+                </div>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div id="loading" class="hidden mt-4 text-center">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+                <p class="text-gray-600 dark:text-gray-400 mt-2">Translating...</p>
+            </div>
+        </div>
+
+        <!-- Examples -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
+                💡 Quick Examples
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <button onclick="setExample('en', 'Agriculture is the backbone of India')" 
+                        class="p-3 text-left bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition">
+                    <p class="text-sm text-gray-600 dark:text-gray-400">English</p>
+                    <p class="text-gray-800 dark:text-gray-200">Agriculture is the backbone...</p>
+                </button>
+                <button onclick="setExample('hi', 'कृषि भारत की रीढ़ है')" 
+                        class="p-3 text-left bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition">
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Hindi</p>
+                    <p class="text-gray-800 dark:text-gray-200">कृषि भारत की रीढ़ है</p>
+                </button>
+                <button onclick="setExample('ta', 'விவசாயம் இந்தியாவின் முதுகெலும்பு')" 
+                        class="p-3 text-left bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition">
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Tamil</p>
+                    <p class="text-gray-800 dark:text-gray-200">விவசாயம் இந்தியாவின்...</p>
+                </button>
+                <button onclick="setExample('te', 'వ్యవసాయం భారతదేశం వెన్నెముక')" 
+                        class="p-3 text-left bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition">
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Telugu</p>
+                    <p class="text-gray-800 dark:text-gray-200">వ్యవసాయం భారతదేశం...</p>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Base URL
+        const API_BASE = 'http://localhost:5000/api';
+
+        // Get saved language preference
+        function getSavedLanguage() {
+            return localStorage.getItem('preferredLanguage');
+        }
+
+        // Save language preference
+        function saveLanguagePreference() {
+            const selectedLang = document.getElementById('languageSelect').value;
+            if (!selectedLang) {
+                alert('Please select a language first');
+                return;
+            }
+            
+            localStorage.setItem('preferredLanguage', selectedLang);
+            
+            // Update display
+            const langName = document.getElementById('languageSelect').options[document.getElementById('languageSelect').selectedIndex].text;
+            document.getElementById('currentLangDisplay').textContent = langName;
+            
+            // Show success message
+            const msg = document.createElement('div');
+            msg.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg';
+            msg.textContent = `✅ Language preference saved: ${langName}`;
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 3000);
+            
+            console.log(`Language preference saved: ${selectedLang.toUpperCase()}`);
+        }
+
+        // Load supported languages from backend
+        async function loadLanguages() {
+            try {
+                const response = await fetch(`${API_BASE}/translate/languages`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const select = document.getElementById('languageSelect');
+                    const override = document.getElementById('targetLangOverride');
+                    
+                    // Clear loading option
+                    select.innerHTML = '';
+                    override.innerHTML = '<option value="">Use my saved preference</option>';
+                    
+                    // Add all languages
+                    data.languages.forEach(lang => {
+                        const option = document.createElement('option');
+                        option.value = lang.code;
+                        option.textContent = `${lang.native} (${lang.name})`;
+                        select.appendChild(option);
+                        
+                        const option2 = option.cloneNode(true);
+                        override.appendChild(option2);
+                    });
+                    
+                    console.log(`✅ Loaded ${data.total} languages from Sarvam AI`);
+                    return true;
+                }
+            } catch (error) {
+                console.error('Failed to load languages:', error);
+                alert('Failed to connect to backend. Make sure Flask server is running on port 5000');
+            }
+            return false;
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', async () => {
+            // Load languages from backend
+            await loadLanguages();
+            
+            // Get browser language
+            const browserLang = (navigator.language || navigator.userLanguage).slice(0, 2);
+            document.getElementById('browserLang').textContent = browserLang.toUpperCase();
+            
+            // Get saved preference or use browser default
+            const savedLang = getSavedLanguage();
+            const currentLang = savedLang || browserLang;
+            
+            // Set dropdown to current language
+            const select = document.getElementById('languageSelect');
+            if (select.querySelector(`option[value="${currentLang}"]`)) {
+                select.value = currentLang;
+            } else {
+                select.value = 'en'; // Fallback to English
+            }
+            
+            // Update display
+            const langName = select.options[select.selectedIndex].text;
+            document.getElementById('currentLangDisplay').textContent = langName;
+            
+            console.log(`Current language: ${currentLang.toUpperCase()}`);
+        });
+
+        // Translate text
+        async function translateText() {
+            const text = document.getElementById('inputText').value.trim();
+            if (!text) {
+                alert('Please enter some text to translate');
+                return;
+            }
+            
+            // Get target language (override or preference)
+            const override = document.getElementById('targetLangOverride').value;
+            const savedLang = getSavedLanguage();
+            const targetLang = override || savedLang || 'en';
+            
+            // Show loading
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('output').classList.add('hidden');
+            
+            try {
+                const response = await fetch(`${API_BASE}/translate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: text,
+                        target_lang: targetLang
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Display results
+                    document.getElementById('detectedLang').textContent = 
+                        data.detected_source_lang.toUpperCase();
+                    document.getElementById('targetLangUsed').textContent = 
+                        data.target_lang.toUpperCase();
+                    document.getElementById('outputText').textContent = 
+                        data.translated_text;
+                    
+                    // Show output
+                    document.getElementById('output').classList.remove('hidden');
+                    
+                    console.log('Translation successful:', data);
+                } else {
+                    alert(`Translation failed: ${data.error || data.message}`);
+                }
+            } catch (error) {
+                console.error('Translation error:', error);
+                alert('Translation failed. Please check console for details.');
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+            }
+        }
+
+        // Set example text
+        function setExample(lang, text) {
+            document.getElementById('inputText').value = text;
+            console.log(`Example set: ${lang} - ${text}`);
+        }
+
+        // Allow Enter key to translate
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('inputText').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && e.ctrlKey) {
+                    translateText();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

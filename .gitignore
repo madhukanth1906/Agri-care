@@ -1,0 +1,50 @@
+# Environment Variables
+.env
+.env.local
+.env.*.local
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+venv_new/
+ENV/
+env/
+*.egg-info/
+dist/
+build/
+
+# JavaScript dependencies
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Uploads
+uploads/
+*.tmp
+
+# Firebase
+*-service-account-key.json
+firebase-adminsdk-*.json
+
+# Project docs and secret inventories
+API_KEYS_LIST.txt
+API_KEYS_SETUP_GUIDE.txt
+
+# OS
+.DS_Store
+Thumbs.db

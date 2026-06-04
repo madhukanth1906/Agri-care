@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Hosting Test - AgriCare</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 500px;
+        }
+        .logo {
+            font-size: 2.5rem;
+            color: #16a34a;
+            margin-bottom: 10px;
+        }
+        .success {
+            color: #16a34a;
+            font-size: 1.2rem;
+            margin: 20px 0;
+        }
+        .info {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+        .btn {
+            display: inline-block;
+            background: #16a34a;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            margin: 20px 10px;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #15803d;
+        }
+        .deployment-info {
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🌱 AgriCare</div>
+        <h1>Firebase Hosting Ready!</h1>
+        <div class="success">✅ Your project is configured for Firebase Hosting</div>
+        
+        <div class="deployment-info">
+            <h3>🚀 Deployment Information</h3>
+            <p><strong>Project:</strong> agricare-project</p>
+            <p><strong>Domains:</strong></p>
+            <ul>
+                <li>agricare-project.web.app</li>
+                <li>agricare-project.firebaseapp.com</li>
+            </ul>
+            <p><strong>Frontend Directory:</strong> /frontend/</p>
+            <p><strong>Firebase SDK:</strong> v9+ Modular (CDN + NPM)</p>
+        </div>
+
+        <div class="info">
+            <p>Your AgriCare application is ready to be deployed to Firebase Hosting. The configuration includes:</p>
+            <ul style="text-align: left; display: inline-block;">
+                <li>Firebase Authentication</li>
+                <li>Firestore Database</li>
+                <li>Cloud Storage</li>
+                <li>Analytics</li>
+                <li>Disease Detection AI</li>
+                <li>Mobile-responsive design</li>
+            </ul>
+        </div>
+
+        <a href="/frontend/index.html" class="btn">Go to AgriCare App</a>
+        <a href="https://console.firebase.google.com/project/agricare-project" class="btn" target="_blank">Firebase Console</a>
+
+        <div style="margin-top: 30px; font-size: 0.9rem; color: #6b7280;">
+            <p>To deploy: <code>firebase deploy --only hosting</code></p>
+            <p>To preview: <code>firebase hosting:channel:deploy preview</code></p>
+        </div>
+    </div>
+
+    <script>
+        // Test Firebase configuration
+        console.log('🔥 Firebase Hosting Test Page Loaded');
+        console.log('📱 AgriCare - AI Farming Assistant');
+        console.log('🚀 Ready for deployment to: agricare-project.web.app');
+    </script>
+</body>
+</html>
