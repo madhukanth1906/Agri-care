@@ -1740,11 +1740,12 @@
                 console.log('📊 Forecast data keys:', Object.keys(data));
 
                 // Handle Open-Meteo format
-                if (data.time && data.weathercode && data.temperature_2m_max && data.temperature_2m_min) {
+                const dataWeatherCode = data.weathercode || data.weather_code;
+                if (data.time && dataWeatherCode && data.temperature_2m_max && data.temperature_2m_min) {
                     const forecastHtml = data.time.slice(0, 7).map((dateStr, index) => {
                         const date = new Date(dateStr);
                         const dayName = index === 0 ? 'Today' : date.toLocaleDateString('en-US', { weekday: 'short' });
-                        const weatherCode = data.weathercode[index];
+                        const weatherCode = dataWeatherCode[index];
                         const icon = getWeatherIcon(weatherCode);
                         const high = Math.round(data.temperature_2m_max[index]);
                         const low = Math.round(data.temperature_2m_min[index]);
